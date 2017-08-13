@@ -7,6 +7,7 @@ var http = require("http"),
     port = process.env.PORT || 3000,
     access_token = process.env.TOKEN;
 
+//подключаем vk-io
 const VK = require("vk-io"),
       vk = new VK({token: access_token}),
       chain = vk.chain();
@@ -18,13 +19,13 @@ app.get("/", function(req, res){
 });
 
 
-var old_post_date = [0, 0],
+var old_post_date = [0, 0],//фиксирует дату последней репостнутой записи, чтобы не репостить одно и тоже(могут забэнить)
     post_date,
     post_text,
     post_id,
     owner_group_id,
     group_id,
-    white_list = ["репост", "вступить", "лайк"],
+    white_list = ["репост", "вступить", "лайк"], //если есть эти слова в текте записи, то можно репостить
     white_list_check = function(slovo){
        for(var i = 0; i < white_list.length; i++){
           if(white_list[i] === slovo) return true;
@@ -32,7 +33,7 @@ var old_post_date = [0, 0],
     };
 
 var repost_and_join = function(wall, index){
-   if(wall.items[0].copy_history){ 
+   if(wall.items[0].copy_history){ //если запись перерепостнута, то берем данные из оригинального поста(из поля copy_history
       post_date = wall.items[0].copy_history[0].date;   
       post_text = wall.items[0].copy_history[0].text.replace(/[^А-Яа-яA-Za-z\s]/g, ' ').toLowerCase().split(/\s+/);
       post_id = wall.items[0].copy_history[0].id;
@@ -63,7 +64,7 @@ var repost_and_join = function(wall, index){
 
 vk.api.execute();
 
-var timerID = setTimeout( function reposting() {
+var timerID = setTimeout( function reposting() { //включаем функцию раз в час, чтобы незабэнили
    if(timerID === 4) clearTimeout(timerID);
    else{
       vk.executes("wall.get", [
