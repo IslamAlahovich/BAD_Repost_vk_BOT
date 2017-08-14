@@ -64,9 +64,8 @@ var repost_and_join = function(wall, index){
 
 vk.api.execute();
 
-var timerID = setTimeout( function reposting() { //включаем функцию раз в час, чтобы незабэнили
-   if(timerID === 4) clearTimeout(timerID);
-   else{
+var timerID = setInterval( function reposting() {
+
       vk.executes("wall.get", [
          {owner_id: -97758272, count: 1, extended: true},
          {owner_id: -109933725, offset: 1, count:1, extended: true}
@@ -79,8 +78,5 @@ var timerID = setTimeout( function reposting() { //включаем функци
       .catch((error) => {
          console.log("WALL_GET_ERROR: "+error);
       });
-      
-      return timerID = setTimeout( reposting, 3600000);
-   }
-}, 3600000);
 
+}, 600000);
